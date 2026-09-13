@@ -208,7 +208,7 @@ async function newGame() {
   document.getElementById('message').innerText = '';
 }
 
-async function checkSolution() {
+async function checkSolution(highlightMissing = false) {
   const requestId = ++validationRequest;
   const boardDiv = document.getElementById('sudoku-board');
   const inputs = boardDiv.getElementsByTagName('input');
@@ -238,6 +238,9 @@ async function checkSolution() {
   for (let idx = 0; idx < inputs.length; idx++) {
     const inp = inputs[idx];
     if (inp.disabled) continue;
+    if (highlightMissing && board[Math.floor(idx / SIZE)][idx % SIZE] === 0) {
+      incorrect.add(idx);
+    }
     inp.className = 'sudoku-cell';
     if (incorrect.has(idx)) {
       inp.className = 'sudoku-cell incorrect';
@@ -289,7 +292,7 @@ window.addEventListener('load', () => {
   document.getElementById('new-game').addEventListener('click', newGame);
   document.getElementById('hint').addEventListener('click', requestHint);
   document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-  document.getElementById('check-solution').addEventListener('click', checkSolution);
+  document.getElementById('check-solution').addEventListener('click', () => checkSolution(true));
   document.getElementById('submit-score').addEventListener('click', saveScore);
   renderLeaderboard();
   // initialize

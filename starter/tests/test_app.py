@@ -46,6 +46,12 @@ def test_leaderboard_client_code_supports_persistence_and_top_ten_rules():
     assert 'getElapsedSeconds()' in javascript
     assert 'hints_used' in javascript
     assert 'using ${completedScore.hints_used} hints' in javascript
+    assert 'let hintsUsed = 0' in javascript
+    assert 'hintsUsed = Number.isInteger(data.hints_used)' in javascript
+    assert 'hints_used: hintsUsed' in javascript
+    assert 'localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(scores))' in javascript
+    assert 'Number.isInteger(score.hints_used) ? score.hints_used : 0' in javascript
+    assert 'if (scoreSubmitted || completedScore === null) return' in javascript
     assert "difficulty: document.getElementById('difficulty').value" in javascript
     assert 'scoreSubmitted' in javascript
     assert "document.getElementById('submit-score')" in javascript
@@ -125,6 +131,15 @@ def test_stylesheet_supports_responsive_board_controls_and_leaderboard():
     assert 'table-layout: fixed' in stylesheet
     assert 'overflow-wrap: anywhere' in stylesheet
     assert '@media (max-width: 520px)' in stylesheet
+
+
+def test_check_client_only_highlights_missing_cells_on_explicit_check():
+    javascript = MAIN_JS.read_text()
+
+    assert 'async function checkSolution(highlightMissing = false)' in javascript
+    assert 'if (highlightMissing && board[Math.floor(idx / SIZE)][idx % SIZE] === 0)' in javascript
+    assert "addEventListener('input', (e) =>" in javascript
+    assert "addEventListener('click', () => checkSolution(true))" in javascript
 
 
 def test_new_game_returns_puzzle_and_stores_solution(client):
